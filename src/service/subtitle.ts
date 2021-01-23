@@ -19,6 +19,8 @@ export const parsePSRTToObject = (
     if (rawFile.readyState === 4) {
       if (rawFile.status === 200 || rawFile.status == 0) {
         let allText = rawFile.responseText;
+        console.log(allText);
+        
         let i = 0;
         let lastIndex = 0;
         allText.split("\n").map((line) => {
@@ -68,15 +70,18 @@ export const parseObjectToPSRT = (sub: {
     width: number;
     size: number;
     text: string;
+    index: number;
     style: React.CSSProperties;
   }[];
 }): string => {
   let out = "";
 
   Object.keys(sub).map((page) => {
-    out += `$START ${page}`;
-    sub[page].map(({ x, y, size, width, text, style }) => {
-      out += `${x}-${y}-${size}-${width} ${JSON.stringify(style)}\n`;
+    out += `$START ${page}\n`;
+    sub[page].map(({ x, y, size, width, text, style, index }, i) => {
+      out += `>>${x}-${y}-${size}-${width} ${JSON.stringify(style)} ${
+        index || i
+      }\n`;
       out += `${text}\n\n`;
     });
     out += `$END ${page}\n\n`;

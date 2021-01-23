@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import ImageSubTittle from "./cmponents/ImageSubTittle";
@@ -7,15 +7,19 @@ import EditSub from "./cmponents/EditSub";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
-  const subs = parsePSRTToObject(
-    "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.psrt"
+  const [subs, setSubs] = useState(
+    parsePSRTToObject(
+      "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
+    )
   );
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log(subs);
+  }, [subs]);
 
   return (
-    <div className="App" style={{ display: "flex" }}>
-      <EditSub />
+    <div className="App container" style={{ display: "flex" }}>
+      <EditSub sub={subs} setSub={setSubs} page={"page1"} />
       <div>
         <ImageSubTittle
           imgPath="assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"

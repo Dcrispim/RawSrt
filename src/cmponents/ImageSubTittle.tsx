@@ -47,6 +47,7 @@ const ImageSubTittle: React.FC<{
           .map(({ text, x, y, width, size, style, index }) => (
             <SubTitle
               key={index}
+              id={index}
               text={text}
               x={x}
               y={y}
@@ -75,6 +76,7 @@ const SubTitle = ({
   width,
   size,
   style,
+  id
 }: {
   text: string;
   x: number;
@@ -84,6 +86,7 @@ const SubTitle = ({
 }) => {
   return (
     <p
+    id={`${id}`}
       style={{
         position: "absolute",
         top: `${y}%`,
