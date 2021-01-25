@@ -7,6 +7,7 @@ import EditSub from "./cmponents/EditSub";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
+  const [imageBlob, setImageBlob] = useState("assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg")
   const [subs, setSubs] = useState(
     parsePSRTToObject(
       "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
@@ -19,15 +20,15 @@ function App() {
 
   return (
     <div className="App container" style={{ display: "flex" }}>
-      <EditSub sub={subs} setSub={setSubs} page={"page1"} />
+      <EditSub sub={subs} setSub={setSubs} page={"page1"} setImage={setImageBlob} />
       <div>
         <ImageSubTittle
-          imgPath="assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
+          imgPath={imageBlob}
           subtitle={subs.page1}
         />
         <ImageSubTittle
           style={{ width: "1300px" }}
-          imgPath="assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
+          imgPath={imageBlob}
           subtitle={subs.page1}
         />
       </div>

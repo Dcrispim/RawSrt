@@ -20,7 +20,8 @@ const EditSub: React.FC<{
   sub: TypeSub;
   setSub: (a: TypeSub | ((a: TypeSub) => TypeSub)) => void;
   page?: string;
-}> = ({ sub, setSub, page }) => {
+  setImage: (a: string | ((a: string) => string)) => void;
+}> = ({ sub, setSub, page, setImage }) => {
   const [index, setIndex] = useState<string | number>(1);
   const [x, setX] = useState<string | number>(0);
   const [y, setY] = useState<string | number>(0);
@@ -137,6 +138,20 @@ const EditSub: React.FC<{
     return sub;
   };
 
+  function getLocalImage(evt) {
+    let tgt = evt.target;
+    let files = tgt.files;
+
+    // FileReader support
+    if (FileReader && files && files.length) {
+      let fr = new FileReader();
+      fr.onload = () => showImage(fr);
+      fr.readAsDataURL(files[0]);
+    }
+  }
+
+  const showImage = (fr: FileReader) => setImage(fr.result);
+
   return (
     <Form style={{ position: "fixed", left: 0 }}>
       <div className={`form-check form-switch ${!show ? "ml-5" : ""}`}>
@@ -173,7 +188,7 @@ const EditSub: React.FC<{
               type="number"
               min="0"
               max="100"
-              step="0.01"
+              step="0.1"
               placeholder="X"
             />
           </Form.Group>
@@ -186,7 +201,7 @@ const EditSub: React.FC<{
               type="number"
               min="0"
               max="100"
-              step="0.01"
+              step="0.1"
               placeholder="Y"
             />
           </Form.Group>
@@ -198,7 +213,7 @@ const EditSub: React.FC<{
               type="number"
               min="0"
               max="100"
-              step="0.01"
+              step="0.1"
               placeholder="size"
             />
           </Form.Group>
@@ -210,7 +225,7 @@ const EditSub: React.FC<{
               type="number"
               min="0"
               max="100"
-              step="0.01"
+              step="0.1"
               placeholder="width"
             />
           </Form.Group>
@@ -241,6 +256,14 @@ const EditSub: React.FC<{
             >
               Dowload Subtitle (.json)
             </Button>
+            <Form.Group controlId="formText">
+              <Form.Label>Text</Form.Label>
+              <Form.Control
+                onChange={getLocalImage}
+                type="file"
+                placeholder="width"
+              />
+            </Form.Group>
           </div>
         </div>
       )}

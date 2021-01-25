@@ -24,11 +24,18 @@ const ImageSubTittle: React.FC<{
   const [subH, setSubH] = useState<any>(0);
   const [subW, setSubW] = useState<any>(0);
   const updateSubs = () => {
-    setSubY(imgRef.current?.y);
-    setSubX(imgRef.current?.x);
-    setSubH(imgRef.current?.clientHeight);
-    setSubW(imgRef.current?.clientWidth);
+    setSubY(imgRef.current?.offsetTop);
+    setSubX(imgRef.current?.offsetLeft);
+    setSubH(imgRef.current?.offsetHeight);
+    setSubW(imgRef.current?.offsetWidth);
   };
+
+  useEffect(() => {
+    window.addEventListener("resize", updateSubs);
+    return () => {
+      window.removeEventListener("resize", updateSubs);
+    };
+  }, []);
 
   return (
     <div>
@@ -59,7 +66,6 @@ const ImageSubTittle: React.FC<{
       </div>
       <img
         onLoad={updateSubs}
-        onTimeUpdate={updateSubs}
         ref={imgRef}
         src={imgPath}
         alt="pag1"
@@ -76,7 +82,7 @@ const SubTitle = ({
   width,
   size,
   style,
-  id
+  id,
 }: {
   text: string;
   x: number;
@@ -86,7 +92,7 @@ const SubTitle = ({
 }) => {
   return (
     <p
-    id={`${id}`}
+      id={`${id}`}
       style={{
         position: "absolute",
         top: `${y}%`,
