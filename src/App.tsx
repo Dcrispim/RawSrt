@@ -2,34 +2,39 @@ import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import ImageSubTittle from "./cmponents/ImageSubTittle";
-import { parseObjectToPSRT, parsePSRTToObject } from "./service/subtitle";
+import { parseObjectToPSRT, parsePSRTFileToObject } from "./service/subtitle";
 import EditSub from "./cmponents/EditSub";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
-  const [imageBlob, setImageBlob] = useState("assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg")
+  const [imageBlob, setImageBlob] = useState(
+    "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
+  );
+  const [imageStyle, setImageStyle] = useState<React.CSSProperties>({});
   const [subs, setSubs] = useState(
-    parsePSRTToObject(
+    parsePSRTFileToObject(
       "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
     )
   );
-
-  useEffect(() => {
-    console.log(subs);
-  }, [subs]);
+  const [currentPage, setCurrentPage] = useState("page1");
 
   return (
     <div className="App container" style={{ display: "flex" }}>
-      <EditSub sub={subs} setSub={setSubs} page={"page1"} setImage={setImageBlob} />
+      <EditSub
+        sub={subs}
+        setSub={setSubs}
+        page={currentPage}
+        setPage={setCurrentPage}
+        setImage={setImageBlob}
+        setImageStyle={setImageStyle}
+      />
       <div>
+        <ImageSubTittle imgPath={imageBlob} page={currentPage} subtitle={subs} />
         <ImageSubTittle
+          style={{ width: "1300px", ...imageStyle }}
           imgPath={imageBlob}
-          subtitle={subs.page1}
-        />
-        <ImageSubTittle
-          style={{ width: "1300px" }}
-          imgPath={imageBlob}
-          subtitle={subs.page1}
+          page={currentPage}
+          subtitle={subs}
         />
       </div>
     </div>

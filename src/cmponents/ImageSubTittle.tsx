@@ -1,23 +1,26 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { parsePSRTToObject } from "../service/subtitle";
+import { parsePSRTFileToObject } from "../service/subtitle";
 
 // import { Container } from './styles';
 
 const ImageSubTittle: React.FC<{
   imgPath: string;
   subtitle: {
-    x: number;
-    y: number;
-    width: number;
-    size: number;
-    text: string;
-    index: number;
-    style: React.CSSProperties;
-  }[];
+    [page: string]: {
+      x: number;
+      y: number;
+      width: number;
+      size: number;
+      text: string;
+      index: number;
+      style: React.CSSProperties;
+    }[];
+  };
+  page: string;
 
   style?: React.CSSProperties;
   [prop: string]: any;
-}> = ({ imgPath, subtitle, ...props }) => {
+}> = ({ imgPath, subtitle, page, ...props }) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [subY, setSubY] = useState<any>(0);
   const [subX, setSubX] = useState<any>(0);
@@ -49,8 +52,8 @@ const ImageSubTittle: React.FC<{
           height: subH,
         }}
       >
-        {subtitle
-          .sort((a, b) => a.index - b.index)
+        {subtitle[page]
+          ?.sort((a, b) => a.index - b.index)
           .map(({ text, x, y, width, size, style, index }) => (
             <SubTitle
               key={index}
@@ -68,7 +71,7 @@ const ImageSubTittle: React.FC<{
         onLoad={updateSubs}
         ref={imgRef}
         src={imgPath}
-        alt="pag1"
+        alt={page}
         {...props}
       />
     </div>

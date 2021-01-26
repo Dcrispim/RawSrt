@@ -1,4 +1,4 @@
-export const parsePSRTToObject = (
+export const parsePSRTFileToObject = (
   file: string
 ): {
   [page: string]: {
@@ -18,47 +18,53 @@ export const parsePSRTToObject = (
   rawFile.onreadystatechange = function () {
     if (rawFile.readyState === 4) {
       if (rawFile.status === 200 || rawFile.status == 0) {
-        let allText = rawFile.responseText;
-        console.log(allText);
-        
-        let i = 0;
-        let lastIndex = 0;
-        allText.split("\n").map((line) => {
-          if (line.includes("$START")) {
-            currentPage = line.substring(6).trim();
-            out[line.substring(6).trim()] = [];
-          } else if (line.includes("$END")) {
-            currentPage = "";
-          } else if (line.includes(">>")) {
-            const clearLine = line.substring(2);
-            const [x, y, s, w] = clearLine.split(" ")[0].split("-");
-            out[currentPage]?.push({
-              index: clearLine.split(" ")[2]
-                ? parseInt(clearLine.split(" ")[2])
-                : lastIndex + i,
-              x: parseFloat(x),
-              y: parseFloat(y),
-              size: parseFloat(s),
-              width: parseFloat(w),
-              style: JSON.parse(clearLine.split(" ")?.[1]),
-            });
-            lastIndex = clearLine.split(" ")[2]
-              ? parseInt(clearLine.split(" ")[2])
-              : lastIndex;
-
-            i += 1;
-          } else if (line.length > 1) {
-            if (out[currentPage]?.length > 0) {
-              out[currentPage][out[currentPage]?.length - 1].text = line;
-            }
-          }
-        });
+        out = { ...parsePSRTToObject(rawFile.responseText) };
       }
     }
   };
 
   rawFile.send(null);
-  console.log(out);
+
+  return out;
+};
+
+export const parsePSRTToObject = (subtitle: string) => {
+  let out: { [k: string]: any } = {};
+  let currentPage = "";
+
+  let i = 0;
+  let lastIndex = 0;
+
+  subtitle.split("\n").map((line) => {
+    if (line.includes("$START")) {
+      currentPage = line.substring(6).trim();
+      out[line.substring(6).trim()] = [];
+    } else if (line.includes("$END")) {
+      currentPage = "";
+    } else if (line.includes(">>")) {
+      const clearLine = line.substring(2);
+      const [x, y, s, w] = clearLine.split("/")[0].split("-");
+      out[currentPage]?.push({
+        index: clearLine.split("/")[2]
+          ? parseInt(clearLine.split("/")[2])
+          : lastIndex + i,
+        x: parseFloat(x),
+        y: parseFloat(y),
+        size: parseFloat(s),
+        width: parseFloat(w),
+        style: JSON.parse(clearLine.split("/")?.[1]),
+      });
+      lastIndex = clearLine.split("/")[2]
+        ? parseInt(clearLine.split("/")[2])
+        : lastIndex;
+
+      i += 1;
+    } else if (line.length > 1) {
+      if (out[currentPage]?.length > 0) {
+        out[currentPage][out[currentPage]?.length - 1].text = line;
+      }
+    }
+  });
 
   return out;
 };
