@@ -23,7 +23,13 @@ function App() {
           "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
         )
   );
-  const [currentPage, setCurrentPage] = useState("page1");
+  const [currentPage, setCurrentPage] = useState(
+    localStorage.getItem("lastPage") || "page1"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("lastPage", currentPage);
+  }, [currentPage]);
 
   return (
     <div className="App container" style={{ display: "flex" }}>
