@@ -7,6 +7,7 @@ import {
   parsePSRTToObject,
 } from "../service/subtitle";
 
+const BG_SELECT_COLOR = "#0f04";
 //import DragScaleBar from 'react-drag-scale-bar'
 // import { Container } from './styles';
 type TypeUseState<T> = (a: T | ((a: T) => T)) => void;
@@ -55,16 +56,12 @@ const EditSub: React.FC<{
   );
 
   const handleChangeSub = () => {
-    console.log(Object.keys(clearSub));
-
     if (Object.keys(clearSub).includes(page)) {
       try {
         setSub((data) => ({
           ...data,
           [page]: [
             ...data[page]?.map((txt) => {
-              console.log(txt.index, index);
-
               if (txt.index === parseInt(String(index))) {
                 return {
                   ...txt,
@@ -75,14 +72,20 @@ const EditSub: React.FC<{
                   text: subText,
                   style: {
                     ...style,
-                    backgroundColor: "#0f0",
+                    backgroundColor: BG_SELECT_COLOR,
                   },
                 };
               } else {
-                if (txt.style.backgroundColor === "#0f0") {
+                if (txt.style.backgroundColor === BG_SELECT_COLOR) {
                   delete txt.style.backgroundColor;
                 }
-                return txt;
+                return {
+                  ...txt,
+                  style: {
+                    ...txt.style,
+                    backgroundColor: clearSub[page]?.style?.backgroundColor,
+                  },
+                };
               }
             }),
           ],
@@ -149,7 +152,7 @@ const EditSub: React.FC<{
           text: subText,
           style: {
             ...style,
-            backgroundColor: "#0f0",
+            backgroundColor: BG_SELECT_COLOR,
           },
         },
       ],
@@ -191,7 +194,7 @@ const EditSub: React.FC<{
             text: subText,
             style: {
               ...style,
-              backgroundColor: "#0f0",
+              backgroundColor: BG_SELECT_COLOR,
             },
           },
         ],
