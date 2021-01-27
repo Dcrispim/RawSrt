@@ -3,10 +3,16 @@ import { parsePSRTFileToObject } from "../service/subtitle";
 
 // import { Container } from './styles';
 
+export type ImageStyle = {
+  [page: string]: {
+    [id: number]: React.CSSProperties;
+  };
+};
+
 const ImageSubTittle: React.FC<{
   imgPath: string;
   subtitle: {
-    __global_style__?:React.CSSProperties;
+    __global_style__?: React.CSSProperties;
     [page: string]: {
       x: number;
       y: number;
@@ -18,10 +24,10 @@ const ImageSubTittle: React.FC<{
     }[];
   };
   page: string;
-
+  editStyles?:ImageStyle;
   style?: React.CSSProperties;
   [prop: string]: any;
-}> = ({ imgPath, subtitle, page, ...props }) => {
+}> = ({ imgPath, subtitle, page, editStyles, ...props }) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [subY, setSubY] = useState<any>(0);
   const [subX, setSubX] = useState<any>(0);
@@ -61,6 +67,7 @@ const ImageSubTittle: React.FC<{
               id={index}
               text={text}
               globalStyle={subtitle.__global_style__}
+              editStyles={editStyles?.[page]?.[index]}
               x={x}
               y={y}
               width={width}
@@ -89,14 +96,17 @@ const SubTitle = ({
   style,
   id,
   globalStyle,
+  editStyles,
 }: {
   text: string;
   x: number;
   y: number;
   width?: number;
   globalStyle?: React.CSSProperties;
+  editStyles?:React.CSSProperties
   [k: string]: any;
 }) => {
+  
   return (
     <p
       id={`${id}`}
@@ -107,7 +117,8 @@ const SubTitle = ({
         width: `${width}%`,
         fontSize: `${size}px`,
         ...style,
-        ...globalStyle
+        ...globalStyle,
+        ...editStyles
       }}
     >
       {text}

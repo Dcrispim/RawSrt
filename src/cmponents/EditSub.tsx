@@ -6,6 +6,7 @@ import {
   parsePSRTFileToObject,
   parsePSRTToObject,
 } from "../service/subtitle";
+import { ImageStyle } from "./ImageSubTittle";
 
 const BG_SELECT_COLOR = "#0f04";
 //import DragScaleBar from 'react-drag-scale-bar'
@@ -29,6 +30,7 @@ const EditSub: React.FC<{
   setPage: TypeUseState<string>;
   setImage: TypeUseState<string>;
   setImageStyle: TypeUseState<React.CSSProperties | string>;
+  setEditStyles: TypeUseState<ImageStyle>;
 }> = ({
   sub,
   setSub,
@@ -36,6 +38,7 @@ const EditSub: React.FC<{
   setPage: setDefaultPage,
   setImage,
   setImageStyle,
+  setEditStyles,
 }) => {
   const [page, setPage] = useState(defaultPage || "page1");
   const [isNewPage, setIsNewPage] = useState(false);
@@ -49,14 +52,19 @@ const EditSub: React.FC<{
   const [style, setStyle] = useState<{ [cssAttr: string]: string }>({});
   const [keyStyle, setKeyStyle] = useState<string>("");
   const [valueStyle, setValueStyle] = useState<string>("");
-  const [clearSub, setClearSub] = useState(sub ? sub : {});
-
   const [lastIndex, setLastIndex] = useState(
     sub[`${page}`]?.reduce((p, c) => (c.index > p ? c.index : p), 0) + 1
-  );
+  );    
 
   const handleChangeSub = () => {
-    if (Object.keys(clearSub).includes(page)) {
+    setEditStyles({
+      [page]: {
+        [index]: {
+          backgroundColor: BG_SELECT_COLOR,
+        },
+      },
+    });
+    if (Object.keys(sub).includes(page)) {
       try {
         setSub((data) => ({
           ...data,
@@ -72,47 +80,15 @@ const EditSub: React.FC<{
                   text: subText,
                   style: {
                     ...style,
-                    backgroundColor: BG_SELECT_COLOR,
                   },
                 };
               } else {
-                if (txt.style.backgroundColor === BG_SELECT_COLOR) {
-                  delete txt.style.backgroundColor;
-                }
-                return {
-                  ...txt,
-                  style: {
-                    ...txt.style,
-                    backgroundColor: clearSub[page]?.style?.backgroundColor,
-                  },
-                };
+                return txt;
               }
             }),
           ],
         }));
 
-        setClearSub((data) => ({
-          ...data,
-          [page]: [
-            ...clearSub?.[page]?.map((txt) => {
-              if (txt.index === parseInt(String(index))) {
-                return {
-                  ...txt,
-                  x: parseFloat(x),
-                  y: parseFloat(y),
-                  width: parseFloat(width),
-                  size: parseFloat(size),
-                  text: subText,
-                  style: {
-                    ...style,
-                  },
-                };
-              } else {
-                return { ...txt };
-              }
-            }),
-          ],
-        }));
       } catch (error) {
         console.log(error);
       }
@@ -158,23 +134,6 @@ const EditSub: React.FC<{
       ],
     }));
 
-    setClearSub((data) => ({
-      ...data,
-      [page]: [
-        ...data[page],
-        {
-          index: parseInt(String(lastIndex)),
-          x: parseFloat(String(x)),
-          y: parseFloat(String(y)),
-          width: parseFloat(String(width)),
-          size: parseFloat(String(size)),
-          text: subText,
-          style: {
-            ...style,
-          },
-        },
-      ],
-    }));
 
     setIndex(lastIndex);
     setLastIndex((old) => old + 1);
@@ -183,7 +142,7 @@ const EditSub: React.FC<{
   const addNewPage = () => {
     if (isNewPage) {
       setSub({
-        ...clearSub,
+        ...sub,
         [page]: [
           {
             index: parseInt(String(0)),
@@ -199,23 +158,6 @@ const EditSub: React.FC<{
           },
         ],
       });
-      setClearSub({
-        ...clearSub,
-        [page]: [
-          {
-            index: parseInt(String(0)),
-            x: parseFloat(String(x)),
-            y: parseFloat(String(y)),
-            width: parseFloat(String(width)),
-            size: parseFloat(String(size)),
-            text: subText,
-            style: {
-              ...style,
-            },
-          },
-        ],
-      });
-
       updateSubInfos(sub);
 
       setIndex(0);
@@ -226,18 +168,17 @@ const EditSub: React.FC<{
   };
 
   const updateSubtitleFile = (fr: FileReader) => {
-    localStorage.setItem('lastPSRT',String(fr.result))
+    localStorage.setItem("lastPSRT", String(fr.result));
     const newSub: TypeSub = parsePSRTToObject(String(fr.result));
     setSub(newSub);
-    setClearSub(newSub);
     setLastIndex(
       newSub[page].reduce((p, { index }) => (index > p ? index : p), 0) + 1
     );
     updateSubInfos(newSub);
   };
   const showImage = (fr: FileReader) => {
-    localStorage.setItem('lastImage',String(fr.result))
-    setImage(String(fr.result))
+    localStorage.setItem("lastImage", String(fr.result));
+    setImage(String(fr.result));
   };
 
   const handleAddStyle = () => {
@@ -260,7 +201,6 @@ const EditSub: React.FC<{
     const newSub = {
       page1: [],
     };
-    setClearSub(newSub);
 
     setSub(newSub);
     setPage("page1");
@@ -276,7 +216,7 @@ const EditSub: React.FC<{
     setIsNewPage(!Object.keys(sub).includes(page));
     Object.keys(sub).includes(page) && setDefaultPage(page);
     setLastIndex(
-      clearSub[page]?.reduce((p, { index }) => (index > p ? index : p), 0) + 1
+      sub[page]?.reduce((p, { index }) => (index > p ? index : p), 0) + 1
     );
   }, [page]);
 
@@ -483,7 +423,7 @@ const EditSub: React.FC<{
           <div>
             <Button
               onClick={() =>
-                download(parseObjectToPSRT(clearSub), "sub.psrt", "jpg")
+                download(parseObjectToPSRT(sub), "sub.psrt", "jpg")
               }
               variant="primary"
             >
@@ -491,7 +431,7 @@ const EditSub: React.FC<{
             </Button>
             <Button
               onClick={() =>
-                download(JSON.stringify(clearSub), "sub.json", "jpg")
+                download(JSON.stringify(sub), "sub.json", "jpg")
               }
               variant="primary"
             >
