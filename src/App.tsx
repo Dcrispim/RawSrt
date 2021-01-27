@@ -29,7 +29,11 @@ function App() {
         setImageStyle={setImageStyle}
       />
       <div>
-        <ImageSubTittle imgPath={imageBlob} page={currentPage} subtitle={subs} />
+        <ImageSubTittle
+          imgPath={imageBlob}
+          page={currentPage}
+          subtitle={subs}
+        />
         <ImageSubTittle
           style={{ width: "1300px", ...imageStyle }}
           imgPath={imageBlob}
