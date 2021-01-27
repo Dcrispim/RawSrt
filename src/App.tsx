@@ -2,19 +2,26 @@ import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import ImageSubTittle from "./cmponents/ImageSubTittle";
-import { parseObjectToPSRT, parsePSRTFileToObject } from "./service/subtitle";
+import {
+  parseObjectToPSRT,
+  parsePSRTFileToObject,
+  parsePSRTToObject,
+} from "./service/subtitle";
 import EditSub from "./cmponents/EditSub";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   const [imageBlob, setImageBlob] = useState(
-    "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
+    localStorage.getItem("lastImage") ||
+      "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
   );
   const [imageStyle, setImageStyle] = useState<React.CSSProperties>({});
   const [subs, setSubs] = useState(
-    parsePSRTFileToObject(
-      "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
-    )
+    localStorage.getItem("lastPSRT")
+      ? parsePSRTToObject(localStorage.getItem("lastPSRT") || "")
+      : parsePSRTFileToObject(
+          "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
+        )
   );
   const [currentPage, setCurrentPage] = useState("page1");
 

@@ -226,6 +226,7 @@ const EditSub: React.FC<{
   };
 
   const updateSubtitleFile = (fr: FileReader) => {
+    localStorage.setItem('lastPSRT',String(fr.result))
     const newSub: TypeSub = parsePSRTToObject(String(fr.result));
     setSub(newSub);
     setClearSub(newSub);
@@ -234,7 +235,10 @@ const EditSub: React.FC<{
     );
     updateSubInfos(newSub);
   };
-  const showImage = (fr: FileReader) => setImage(String(fr.result));
+  const showImage = (fr: FileReader) => {
+    localStorage.setItem('lastImage',String(fr.result))
+    setImage(String(fr.result))
+  };
 
   const handleAddStyle = () => {
     setStyle((old) => ({ ...old, [keyStyle]: valueStyle }));

@@ -87,15 +87,17 @@ export const parseObjectToPSRT = (sub: {
 }): string => {
   let out = "";
 
-  Object.keys(sub).map((page) => {
-    out += `$START ${page}\n`;
-    sub[page].map(({ x, y, size, width, text, style, index }, i) => {
-      out += `>>${x}-${y}-${size}-${width}/${JSON.stringify(style)}/${
-        index || i
-      }\n`;
-      out += `${text}\n\n`;
+  Object.keys(sub)
+    .filter((a) => a !== "__global_style__")
+    .map((page) => {
+      out += `$START ${page}/${JSON.stringify(sub?.__global_style__ || {})}\n`;
+      sub[page]?.map(({ x, y, size, width, text, style, index }, i) => {
+        out += `>>${x}-${y}-${size}-${width}/${JSON.stringify(style)}/${
+          index || i
+        }\n`;
+        out += `${text}\n\n`;
+      });
+      out += `$END ${page}\n\n`;
     });
-    out += `$END ${page}\n\n`;
-  });
   return out;
 };
