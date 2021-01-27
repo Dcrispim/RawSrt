@@ -1,6 +1,15 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useEffect, useState } from "react";
-import { Form, Button, DropdownButton, Dropdown, Row } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  DropdownButton,
+  Dropdown,
+  Row,
+  Col,
+  InputGroup,
+  FormControl,
+} from "react-bootstrap";
 import {
   parseObjectToPSRT,
   parsePSRTFileToObject,
@@ -29,6 +38,7 @@ const EditSub: React.FC<{
   page?: string;
   setPage: TypeUseState<string>;
   setImage: TypeUseState<string>;
+  image?: string;
   setImageStyle: TypeUseState<React.CSSProperties | string>;
   setEditStyles: TypeUseState<ImageStyle>;
 }> = ({
@@ -37,6 +47,7 @@ const EditSub: React.FC<{
   page: defaultPage,
   setPage: setDefaultPage,
   setImage,
+  image,
   setImageStyle,
   setEditStyles,
 }) => {
@@ -52,9 +63,11 @@ const EditSub: React.FC<{
   const [style, setStyle] = useState<{ [cssAttr: string]: string }>({});
   const [keyStyle, setKeyStyle] = useState<string>("");
   const [valueStyle, setValueStyle] = useState<string>("");
+  const [dowloadFileName, setDowloadFileName] = useState("sub");
+  
   const [lastIndex, setLastIndex] = useState(
     sub[`${page}`]?.reduce((p, c) => (c.index > p ? c.index : p), 0) + 1
-  );    
+  );
 
   const handleChangeSub = () => {
     setEditStyles({
@@ -88,7 +101,6 @@ const EditSub: React.FC<{
             }),
           ],
         }));
-
       } catch (error) {
         console.log(error);
       }
@@ -134,7 +146,6 @@ const EditSub: React.FC<{
       ],
     }));
 
-
     setIndex(lastIndex);
     setLastIndex((old) => old + 1);
   };
@@ -172,7 +183,7 @@ const EditSub: React.FC<{
     const newSub: TypeSub = parsePSRTToObject(String(fr.result));
     setSub(newSub);
     setLastIndex(
-      newSub[page].reduce((p, { index }) => (index > p ? index : p), 0) + 1
+      newSub[page]?.reduce((p, { index }) => (index > p ? index : p), 0) + 1
     );
     updateSubInfos(newSub);
   };
@@ -249,6 +260,7 @@ const EditSub: React.FC<{
             <Form.Group className=" col-4 mb-0" controlId="subtitle-file">
               <Form.Label className="btn btn-primary">Load Image</Form.Label>
               <Form.Control
+                readOnly
                 onChange={getLocalImage(showImage)}
                 type="file"
                 style={{ visibility: "hidden", height: "0px" }}
@@ -259,6 +271,7 @@ const EditSub: React.FC<{
             <Form.Group className=" col-4 mb-0" controlId="image-file">
               <Form.Label className="btn btn-primary">Load SubTitle</Form.Label>
               <Form.Control
+              readOnly
                 onChange={getLocalSubtitle(updateSubtitleFile)}
                 type="file"
                 style={{ visibility: "hidden", height: "0px" }}
@@ -273,6 +286,14 @@ const EditSub: React.FC<{
             >
               Clear All
             </Button>
+            <InputSettings
+              className="mt-2 col-12"
+              value={image?.includes("base64") ? "File" : image}
+              placeholder="Image Link"
+              onChange={(d: string) => {
+                setImage((data) => (d === "File" ? data : d));
+              }}
+            />
           </Row>
 
           <Row style={{ alignItems: "flex-end" }}>
@@ -420,27 +441,71 @@ const EditSub: React.FC<{
               Add Style
             </Button>
           </Row>
-          <div>
-            <Button
-              onClick={() =>
-                download(parseObjectToPSRT(sub), "sub.psrt", "jpg")
-              }
-              variant="primary"
-            >
-              Dowload Subtitle (.psrt)
-            </Button>
-            <Button
-              onClick={() =>
-                download(JSON.stringify(sub), "sub.json", "jpg")
-              }
-              variant="primary"
-            >
-              Dowload Subtitle (.json)
-            </Button>
-          </div>
+
+          <Row>
+            <Form.Group className=" col-6" controlId="formDownload">
+              <Form.Label>Download Subtitle</Form.Label>
+              <Form.Control
+                value={dowloadFileName}
+                onChange={(e) => setDowloadFileName(e.target.value)}
+                placeholder="Download Subtitle"
+              />
+            </Form.Group>
+            <Col className=" col-6">
+              <Button
+                className=" col-12 mb-2"
+                disabled={!dowloadFileName}
+                onClick={() =>
+                  download(
+                    parseObjectToPSRT(sub),
+                    `${dowloadFileName}.psrt`,
+                    "*.psrt"
+                  )
+                }
+                variant="primary"
+              >
+                (.psrt)
+              </Button>
+              <Button
+                className=" col-12"
+                disabled={!dowloadFileName}
+                onClick={() =>
+                  download(
+                    JSON.stringify(sub),
+                    `${dowloadFileName}.json`,
+                    "*.json"
+                  )
+                }
+                variant="primary"
+              >
+                (.json)
+              </Button>
+            </Col>
+          </Row>
         </div>
       )}
     </Form>
+  );
+};
+
+const InputSettings = ({
+  placeholder,
+  value,
+  onChange,
+  className = "",
+  ...otherProps
+}) => {
+  return (
+    <InputGroup className={"mb-3 " + className}>
+      <FormControl
+        placeholder={placeholder}
+        aria-label={placeholder}
+        aria-describedby="basic-addon1"
+        onChange={(evt) => onChange(evt.target.value)}
+        value={value}
+        {...otherProps}
+      />
+    </InputGroup>
   );
 };
 

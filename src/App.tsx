@@ -33,8 +33,9 @@ function App() {
     localStorage.setItem("lastPage", currentPage);
   }, [currentPage]);
 
-  console.log(editStyles);
-  
+  useEffect(() => {
+    localStorage.setItem("lastImage", imageBlob);
+  }, [imageBlob]);
 
   return (
     <div className="App container" style={{ display: "flex" }}>
@@ -44,6 +45,7 @@ function App() {
         page={currentPage}
         setPage={setCurrentPage}
         setImage={setImageBlob}
+        image={imageBlob}
         setImageStyle={setImageStyle}
         setEditStyles={setEditStyles}
       />
