@@ -6,6 +6,7 @@ import { parsePSRTFileToObject } from "../service/subtitle";
 const ImageSubTittle: React.FC<{
   imgPath: string;
   subtitle: {
+    __global_style__?:React.CSSProperties;
     [page: string]: {
       x: number;
       y: number;
@@ -59,6 +60,7 @@ const ImageSubTittle: React.FC<{
               key={index}
               id={index}
               text={text}
+              globalStyle={subtitle.__global_style__}
               x={x}
               y={y}
               width={width}
@@ -86,11 +88,13 @@ const SubTitle = ({
   size,
   style,
   id,
+  globalStyle,
 }: {
   text: string;
   x: number;
   y: number;
   width?: number;
+  globalStyle?: React.CSSProperties;
   [k: string]: any;
 }) => {
   return (
@@ -103,6 +107,7 @@ const SubTitle = ({
         width: `${width}%`,
         fontSize: `${size}px`,
         ...style,
+        ...globalStyle
       }}
     >
       {text}

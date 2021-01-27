@@ -37,8 +37,13 @@ export const parsePSRTToObject = (subtitle: string) => {
 
   subtitle.split("\n").map((line) => {
     if (line.includes("$START")) {
-      currentPage = line.substring(6).trim();
-      out[line.substring(6).trim()] = [];
+      currentPage = line.substring(6).trim().split("/")[0];
+      out[currentPage] = [];
+      if (line.substring(6).trim().split("/")[1]) {
+        out.__global_style__ = JSON.parse(
+          line.substring(6).trim().split("/")[1]
+        );
+      }
     } else if (line.includes("$END")) {
       currentPage = "";
     } else if (line.includes(">>")) {
@@ -85,7 +90,7 @@ export const parseObjectToPSRT = (sub: {
   Object.keys(sub).map((page) => {
     out += `$START ${page}\n`;
     sub[page].map(({ x, y, size, width, text, style, index }, i) => {
-      out += `>>${x}-${y}-${size}-${width} ${JSON.stringify(style)} ${
+      out += `>>${x}-${y}-${size}-${width}/${JSON.stringify(style)}/${
         index || i
       }\n`;
       out += `${text}\n\n`;
