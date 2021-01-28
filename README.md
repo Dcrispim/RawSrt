@@ -13,197 +13,128 @@ All measurement values ​​are percentages referring to the original image
 ### JSON format:
 
 ```typescript
-
-        {
-            [page: string]: {
-
-                x: number; // min: 0 max: 100 => Percentege of image width
-                y: number; // min: 0 max: 100 => Percentege of image height
-                index: number; // index number order of text on page
-                width: number; // min: 0 max: 100 => Percentege of image width
-                size: number; // min: 0 max: 100 => Percentege of image width
-                text: string;
-                style: React.CSSProperties; //js Object
-
-            }[]
-        }
-
+  {
+      __global_style__?: React.CSSProperties;
+      __image_link__?: {
+        [page: string]: string;
+      };
+      [page: string]: {
+          x: number; // min: 0 max: 100 => Percentege of image width
+          y: number; // min: 0 max: 100 => Percentege of image height
+          index: number; // index number order of text on page
+          width: number; // min: 0 max: 100 => Percentege of image width
+          size: number; // min: 0 max: 100 => Percentege of image width
+          text: string;
+          style: React.CSSProperties; //js Object
+      }[];
+  };
 ```
 
 #### Exemple:
+
 ```json
 {
   "page1": [
     {
-      "x": 6.7,
-      "y": 8,
-      "width": 6,
+      "index": 0,
+      "x": 13.5,
+      "y": 77.5,
+      "size": 2.8,
+      "width": 9.1,
+      "style": { "backgroundColor": "#0f04" },
+      "text": "AHHHH HHHH!"
+    }
+  ],
+  "__global_style__": { "backgroundColor": "#fff", "lineHeight": "120%" },
+  "__image_link__": {
+    "page1": "https://images.mangafreak.net/mangas/kaifuku_jutsushi_no_yarinaoshi/kaifuku_jutsushi_no_yarinaoshi_32/kaifuku_jutsushi_no_yarinaoshi_32_1.jpg",
+    "page2": "https://images.mangafreak.net/mangas/kaifuku_jutsushi_no_yarinaoshi/kaifuku_jutsushi_no_yarinaoshi_32/kaifuku_jutsushi_no_yarinaoshi_32_2.jpg",
+  },
+  "page2": [
+    {
+      "index": 0,
+      "x": 79.8,
+      "y": 5.2,
       "size": 2,
-      "text": "Nós vamos morrer!",
-      "style": {
-        "fontWeight": "bold",
-        "wordWrap": "break-word",
-        "msWrapFlow": "end"
-      }
+      "width": 11.4,
+      "style": { "borderRadius": "5%" },
+      "text": "Estou cansada onii-sama... Podemos descansar um pouco"
     },
     {
-      "x": 39,
-      "y": 5,
-      "width": 10,
-      "size": 3,
-      "text": "Basta vencer as duas",
-      "style": {
-        "fontWeight": "bold"
-      }
-    },
-    {
-      "x": 55,
-      "y": 2,
-      "width": 11,
-      "size": 2,
-      "text": "Como vocês, humanos, ousam recusar a punição!",
-      "style": {
-        "fontWeight": "bold"
-      }
-    },
-    {
-      "x": 8,
-      "y": 32,
-      "width": 11,
-      "size": 2,
-      "text": "Você parece estar se divertindo.",
-      "style": {
-        //fontWeight: "bold",
-      }
-    },
-    {
-      "x": 18.5,
-      "y": 31,
-      "width": 11,
-      "size": 2,
-      "text": "Jovem Mestre,",
-      "style": {
-        //fontWeight: "bold",
-      }
-    },
-    {
-      "x": 36.5,
-      "y": 32,
-      "width": 11,
-      "size": 2,
-      "text": "O que eu devo fazer sobre isso?!",
-      "style": {
-        //fontWeight: "bold",
-      }
-    },
-    {
-      "x": 10,
-      "y": 65,
-      "width": 7,
-      "size": 2,
-      "text": "Um econt... não era isso!",
-      "style": {
-        //fontWeight: "bold",
-      }
-    },
-    {
-      "x": 7,
-      "y": 74,
-      "width": 10,
-      "size": 2,
-      "text": "Espera, você viu? Quando você começou a vigiar?!",
-      "style": {}
-    },
-    {
-      "x": 51,
-      "y": 60,
-      "width": 10,
-      "size": 2.6,
-      "text": "\"Algo\", você diz?",
-      "style": {}
-    },
-    {
-      "x": 51,
-      "y": 74,
-      "width": 10,
-      "size": 2,
-      "text": "Você teve um encontro com a Mio e agora está me pedindo ajuda?",
-      "style": {}
-    },
-    {
-      "x": 65,
-      "y": 60,
-      "width": 10,
-      "size": 2,
-      "text": "Você não pode fazer algo sobre isso?!",
-      "style": {}
-    },
-    {
-      "x": 83,
-      "y": 58,
-      "width": 10,
+      "index": 1,
+      "x": 64.9,
+      "y": 7.3,
       "size": 1.7,
-      "text": "Telepatia? Tomoe!",
-      "style": {}
+      "width": 8.7,
+      "style": {},
+      "text": "HAAAH... isso é mais dificil do que eu pensei"
     },
     {
-      "x": 83.5,
-      "y": 66.5,
-      "width": 9,
-      "size": 1.4,
-      "text": "Você sabe o que está acontecendo?!",
-      "style": {}
+      "index": 2,
+      "x": 50.5,
+      "y": 23.5,
+      "size": 2.1,
+      "width": 9.8,
+      "style": { "backgroundColor": "#0f04", "fontWeight": "bold" },
+      "text": "Ellen, Freia, vocês são muito lerdas!"
+    },
+    {
+      "index": 3,
+      "x": 69,
+      "y": 80.9,
+      "size": 2.4,
+      "width": 11.8,
+      "style": { "backgroundColor": "#0f04" },
+      "text": "Aguentem só mais um pouco pessoal!"
+    },
+    {
+      "index": 4,
+      "x": 48,
+      "y": 62.4,
+      "size": 2.4,
+      "width": 9.1,
+      "style": { "backgroundColor": "#0f04" },
+      "text": "OKAAY!"
     }
   ]
 }
 
-
 ```
+
 ### PSRT Pattern:
 ```
-$START page1
->>55.16-4.64-1.94-10.08/{"fontWeight":"bold"}/1
-Como vocês, humanos, ousam recusar a punição!
+$START <name_page>|<global styles>|<link image>
 
->>39-5-3-10/{"fontWeight":"bold"}/2
-Basta vencer as duas
+>>x_pos%-y_pos%-font_size%-box_width%|<styles>|index
+text speak
 
->>6.7-8-2-7/{"fontWeight":"bold","wordWrap":"break-word","msWrapFlow":"end"}/3
-Nós vamos mor- rer!
+$END <name_page>
+```
 
->>37.53-32.75-1.71-9.62/{"fontWeight":"bold","wordWrap":"break-word","msWrapFlow":"end"}/4
-O que eu devo fazer sobre isso?!
-
->>19.68-32.05-1.69-8/{}/5
-Jovem Mestre,
-
->>8.11-33.28-2-11/{}/6
-Você parece estar se divertindo.
-
->>83.44-58.17-1.7-8.77/{}/7
-Telepatia? Tomoe!
-
->>83.71-68.26-1.4-9/{}/8
-Você sabe o que está acontecendo?!
-
->>65-61.31-1.9-9.69/{}/9
-Você não pode fazer algo sobre isso?!
-
->>52.24-61.84-2.21-8.07/{}/10
-"Algo", você diz?
-
->>51.93-73.04-1.91-10/{}/11
-Você teve um encontro com a Mio e agora está me pedindo ajuda?
-
->>10-65.89-1.88-7.19/{}/12
-Um econt... não era isso!
-
->>7.62-74.27-1.83-9.65/{}/13
-Espera, você viu? Quando você começou a vigiar?!
-
-
->>55.5-30.7-2.2-14.9/{"textShadow":"2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff","fontWeight":"bold"}/14
-Random Text
+#### Example
+```
+$START page1|{"backgroundColor":"#fff","lineHeight":"120%"}|https://images.mangafreak.net/mangas/kaifuku_jutsushi_no_yarinaoshi/kaifuku_jutsushi_no_yarinaoshi_32/kaifuku_jutsushi_no_yarinaoshi_32_1.jpg
+>>13.5-77.5-2.8-9.1|{"backgroundColor":"#0f04"}|0
+AHHHH HHHH!
 
 $END page1
+
+$START page2|{"backgroundColor":"#fff","lineHeight":"120%"}|https://images.mangafreak.net/mangas/kaifuku_jutsushi_no_yarinaoshi/kaifuku_jutsushi_no_yarinaoshi_32/kaifuku_jutsushi_no_yarinaoshi_32_2.jpg
+>>79.8-5.2-2-11.4|{"borderRadius":"5%"}|0
+Estou cansada onii-sama... Podemos descansar um pouco
+
+>>64.9-7.3-1.7-8.7|{}|1
+HAAAH... isso é mais dificil do que eu pensei
+
+>>50.5-23.5-2.1-9.8|{"backgroundColor":"#0f04","fontWeight":"bold"}|2
+Ellen, Freia, vocês são muito lerdas!
+
+>>69-80.9-2.4-11.8|{"backgroundColor":"#0f04"}|3
+Aguentem só mais um pouco pessoal!
+
+>>48-62.4-2.4-9.1|{"backgroundColor":"#0f04"}|4
+OKAAY!
+
+$END page2
+
 ```
