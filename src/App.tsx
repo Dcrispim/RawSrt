@@ -19,7 +19,7 @@ function App() {
     localStorage.getItem("lastPSRT")
       ? parsePSRTToObject(localStorage.getItem("lastPSRT") || "")
       : parsePSRTFileToObject(
-          "kaifuku_32.psrt"
+          "assets/kaifuku_32.psrt"
         )
   );
   const [currentPage, setCurrentPage] = useState(
