@@ -102,14 +102,20 @@ All measurement values ​​are percentages referring to the original image
 ```
 
 ### PSRT Pattern:
-```
-$START <name_page>|<global styles>|<link image>
 
->>x_pos%-y_pos%-font_size%-box_width%|<styles>|index
+__$START__ `<name_page>` | `<global styles>` | `<link image>`
+
+\>> `x_pos` - `y_pos` - `font_size` - `box_width` | `styles` | `index`
 text speak
 
-$END <name_page>
-```
+__$END__ `<name_page>`
+
+<hr>
+
+`<global_styles>` `<link image>` are optional
+obs: without spaces between __|__ and __-__
+
+
 
 #### Example
 ```
