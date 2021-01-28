@@ -15,23 +15,13 @@ import {
   parsePSRTFileToObject,
   parsePSRTToObject,
 } from "../service/subtitle";
-import { ImageStyle } from "./ImageSubTittle";
+import { ImageStyle, TypeSub } from "./ImageSubTittle";
 
 const BG_SELECT_COLOR = "#0f04";
 //import DragScaleBar from 'react-drag-scale-bar'
 // import { Container } from './styles';
 type TypeUseState<T> = (a: T | ((a: T) => T)) => void;
-type TypeSub = {
-  [page: string]: {
-    x: number;
-    y: number;
-    index: number;
-    width: number;
-    size: number;
-    text: string;
-    style: React.CSSProperties;
-  }[];
-};
+
 const EditSub: React.FC<{
   sub: TypeSub;
   setSub: TypeUseState<TypeSub>;
@@ -64,7 +54,7 @@ const EditSub: React.FC<{
   const [keyStyle, setKeyStyle] = useState<string>("");
   const [valueStyle, setValueStyle] = useState<string>("");
   const [dowloadFileName, setDowloadFileName] = useState("sub");
-  
+
   const [lastIndex, setLastIndex] = useState(
     sub[`${page}`]?.reduce((p, c) => (c.index > p ? c.index : p), 0) + 1
   );
@@ -126,6 +116,15 @@ const EditSub: React.FC<{
     }
   };
 
+  const updateImageLink = (pg: string, link: string) => {
+    setSub((dt) => ({
+      ...dt,
+      __image_link__: {
+        ...dt?.__image_link__,
+        [pg]: link,
+      },
+    }));
+  };
   const addNewText = () => {
     setSub((data) => ({
       ...data,
@@ -271,7 +270,7 @@ const EditSub: React.FC<{
             <Form.Group className=" col-4 mb-0" controlId="image-file">
               <Form.Label className="btn btn-primary">Load SubTitle</Form.Label>
               <Form.Control
-              readOnly
+                readOnly
                 onChange={getLocalSubtitle(updateSubtitleFile)}
                 type="file"
                 style={{ visibility: "hidden", height: "0px" }}
@@ -291,7 +290,14 @@ const EditSub: React.FC<{
               value={image?.includes("base64") ? "File" : image}
               placeholder="Image Link"
               onChange={(d: string) => {
-                setImage((data) => (d === "File" ? data : d));
+                setImage((data) => {
+                  if (d === "File") {
+                    return data;
+                  } else {
+                    updateImageLink(page, d);
+                    return d;
+                  }
+                });
               }}
             />
           </Row>

@@ -37,30 +37,39 @@ export const parsePSRTToObject = (subtitle: string) => {
 
   subtitle.split("\n").map((line) => {
     if (line.includes("$START")) {
-      currentPage = line.substring(6).trim().split("/")[0];
+      currentPage = line.substring(6).trim().split("|")[0];
       out[currentPage] = [];
-      if (line.substring(6).trim().split("/")[1]) {
+      if (line.substring(6).trim().split("|")[1]) {
         out.__global_style__ = JSON.parse(
-          line.substring(6).trim().split("/")[1]
+          line.substring(6).trim().split("|")[1]
         );
+      }
+      if (line.substring(6).trim().split("|")[2]) {
+        if (!Object.keys(out).includes("__image_link__")) {
+          out["__image_link__"] = {};
+        }
+        out["__image_link__"][currentPage] = line
+          .substring(6)
+          .trim()
+          .split("|")[2];
       }
     } else if (line.includes("$END")) {
       currentPage = "";
     } else if (line.includes(">>")) {
       const clearLine = line.substring(2);
-      const [x, y, s, w] = clearLine.split("/")[0].split("-");
+      const [x, y, s, w] = clearLine.split("|")[0].split("-");
       out[currentPage]?.push({
-        index: clearLine.split("/")[2]
-          ? parseInt(clearLine.split("/")[2])
+        index: clearLine.split("|")[2]
+          ? parseInt(clearLine.split("|")[2])
           : lastIndex + i,
         x: parseFloat(x),
         y: parseFloat(y),
         size: parseFloat(s),
         width: parseFloat(w),
-        style: JSON.parse(clearLine.split("/")?.[1]),
+        style: JSON.parse(clearLine.split("|")?.[1]),
       });
-      lastIndex = clearLine.split("/")[2]
-        ? parseInt(clearLine.split("/")[2])
+      lastIndex = clearLine.split("|")[2]
+        ? parseInt(clearLine.split("|")[2])
         : lastIndex;
 
       i += 1;
@@ -88,11 +97,11 @@ export const parseObjectToPSRT = (sub: {
   let out = "";
 
   Object.keys(sub)
-    .filter((a) => a !== "__global_style__")
+    .filter((a) => !a.includes("__"))
     .map((page) => {
-      out += `$START ${page}/${JSON.stringify(sub?.__global_style__ || {})}\n`;
+      out += `$START ${page}|${JSON.stringify(sub?.__global_style__ || {})}|${sub?.__image_link__[page]}\n`;
       sub[page]?.map(({ x, y, size, width, text, style, index }, i) => {
-        out += `>>${x}-${y}-${size}-${width}/${JSON.stringify(style)}/${
+        out += `>>${x}-${y}-${size}-${width}|${JSON.stringify(style)}|${
           index || i
         }\n`;
         out += `${text}\n\n`;

@@ -9,22 +9,27 @@ export type ImageStyle = {
   };
 };
 
+export type TypeSub = {
+  __global_style__?: React.CSSProperties;
+  __image_link__?: {
+    [page: string]: string;
+  };
+  [page: string]: {
+    x: number;
+    y: number;
+    width: number;
+    size: number;
+    text: string;
+    index: number;
+    style: React.CSSProperties;
+  }[];
+};
+
 const ImageSubTittle: React.FC<{
   imgPath: string;
-  subtitle: {
-    __global_style__?: React.CSSProperties;
-    [page: string]: {
-      x: number;
-      y: number;
-      width: number;
-      size: number;
-      text: string;
-      index: number;
-      style: React.CSSProperties;
-    }[];
-  };
+  subtitle: TypeSub
   page: string;
-  editStyles?:ImageStyle;
+  editStyles?: ImageStyle;
   style?: React.CSSProperties;
   [prop: string]: any;
 }> = ({ imgPath, subtitle, page, editStyles, ...props }) => {
@@ -46,6 +51,7 @@ const ImageSubTittle: React.FC<{
       window.removeEventListener("resize", updateSubs);
     };
   }, []);
+  console.log(subtitle);
 
   return (
     <div>
@@ -79,7 +85,7 @@ const ImageSubTittle: React.FC<{
       <img
         onLoad={updateSubs}
         ref={imgRef}
-        src={imgPath}
+        src={subtitle?.__image_link__[page] || imgPath}
         alt={page}
         {...props}
       />
@@ -103,10 +109,9 @@ const SubTitle = ({
   y: number;
   width?: number;
   globalStyle?: React.CSSProperties;
-  editStyles?:React.CSSProperties
+  editStyles?: React.CSSProperties;
   [k: string]: any;
 }) => {
-  
   return (
     <p
       id={`${id}`}
@@ -118,7 +123,7 @@ const SubTitle = ({
         fontSize: `${size}px`,
         ...style,
         ...globalStyle,
-        ...editStyles
+        ...editStyles,
       }}
     >
       {text}

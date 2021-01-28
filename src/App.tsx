@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import ImageSubTittle from "./cmponents/ImageSubTittle";
+import ImageSubTittle, { TypeSub } from "./cmponents/ImageSubTittle";
 import {
   parseObjectToPSRT,
   parsePSRTFileToObject,
@@ -16,7 +16,7 @@ function App() {
       "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
   );
   const [imageStyle, setImageStyle] = useState<React.CSSProperties>({});
-  const [subs, setSubs] = useState(
+  const [subs, setSubs] = useState<TypeSub>(
     localStorage.getItem("lastPSRT")
       ? parsePSRTToObject(localStorage.getItem("lastPSRT") || "")
       : parsePSRTFileToObject(
@@ -31,6 +31,9 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("lastPage", currentPage);
+    if(subs?.__image_link__?.[currentPage]){
+      setImageBlob(subs?.__image_link__?.[currentPage])
+    }
   }, [currentPage]);
 
   useEffect(() => {
