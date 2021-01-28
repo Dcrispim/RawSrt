@@ -12,15 +12,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   const [imageBlob, setImageBlob] = useState(
-    localStorage.getItem("lastImage") ||
-      "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02.jpg"
+    localStorage.getItem("lastImage") || ""
   );
   const [imageStyle, setImageStyle] = useState<React.CSSProperties>({});
   const [subs, setSubs] = useState<TypeSub>(
     localStorage.getItem("lastPSRT")
       ? parsePSRTToObject(localStorage.getItem("lastPSRT") || "")
       : parsePSRTFileToObject(
-          "assets/-fasc-nio-asi-tico-tsuki-ga-michibiku-isekai-douchuu-vol06-cap39-pag02_.psrt"
+          "kaifuku_32.psrt"
         )
   );
   const [currentPage, setCurrentPage] = useState(
@@ -31,8 +30,8 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("lastPage", currentPage);
-    if(subs?.__image_link__?.[currentPage]){
-      setImageBlob(subs?.__image_link__?.[currentPage])
+    if (subs?.__image_link__?.[currentPage]) {
+      setImageBlob(subs?.__image_link__?.[currentPage]);
     }
   }, [currentPage]);
 
