@@ -242,22 +242,22 @@ const EditSub: React.FC<{
     );
   }, [page]);
 
-  useEffect(() => {
-    if (mouseImageClick) {
-      setX((prevX) => (mouse?.x !== undefined ? mouse?.x : prevX));
-      setY((prevY) => (mouse?.y !== undefined ? mouse?.y : prevY));
-      setMouseImageClick && setMouseImageClick(false);
-    }
-  }, [mouseImageClick, mouse, setMouseImageClick]);
-
-
-
   // useEffect(() => {
-  //   const config = JSON.parse(localStorage.getItem("configs") || "{}");
-  //   if (config?.maxTextSize) {
-  //     setMaxTextSize(config.maxTextSize);
+  //   if (mouseImageClick) {
+  //     setX((prevX) => (mouse?.x !== undefined ? mouse?.x : prevX));
+  //     setY((prevY) => (mouse?.y !== undefined ? mouse?.y : prevY));
+  //     setMouseImageClick && setMouseImageClick(false);
   //   }
-  // }, []);
+  // }, [mouseImageClick, mouse, setMouseImageClick]);
+
+
+
+  useEffect(() => {
+    const config = JSON.parse(localStorage.getItem("configs") || "{}");
+    if (config?.maxTextSize) {
+      setMaxTextSize(config.maxTextSize);
+    }
+  }, []);
 
   return (
     <Form
