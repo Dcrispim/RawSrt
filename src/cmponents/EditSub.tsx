@@ -44,7 +44,8 @@ const EditSub: React.FC<{
   setPage: setDefaultPage,
   setImage,
   image,
-  textIndexselected
+  textIndexselected,
+  setEditStyles
 }) => {
   const [page, setPage] = useState(defaultPage || "page1");
   const [isNewPage, setIsNewPage] = useState(false);
