@@ -45,7 +45,7 @@ const EditSub: React.FC<{
   setImage,
   image,
   textIndexselected,
-  setEditStyles
+  setEditStyles,
 }) => {
   const [page, setPage] = useState(defaultPage || "page1");
   const [isNewPage, setIsNewPage] = useState(false);
@@ -244,12 +244,14 @@ const EditSub: React.FC<{
   };
 
   const handleAddStyle = () => {
-    setStyle((old) => ({
-      ...old,
-      [abbrevStyles[keyStyle] || keyStyle]: valueStyle,
-    }));
-    setValueStyle("");
-    setKeyStyle("");
+    if (keyStyle && valueStyle) {
+      setStyle((old) => ({
+        ...old,
+        [abbrevStyles[keyStyle] || keyStyle]: valueStyle,
+      }))
+      setValueStyle("");
+      setKeyStyle("");
+    }
   };
 
   const handleRemoveStyle = (key: string) => {
@@ -807,7 +809,7 @@ const Select = ({
   );
 };
 
-const abbrevStyles = {
+const abbrevStyles: { [k: string]: string } = {
   bgc: "background-color",
   bg: "background",
   p: "padding",
