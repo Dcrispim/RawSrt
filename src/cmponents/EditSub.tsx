@@ -33,10 +33,10 @@ const EditSub: React.FC<{
   image?: string;
   setImageStyle: TypeUseState<React.CSSProperties | string>;
   setEditStyles: TypeUseState<ImageStyle>;
-  editStyles: ImageStyle;
   mouseImageClick?: boolean;
   setMouseImageClick?: React.Dispatch<React.SetStateAction<boolean>>;
   mouse?: { x: number; y: number };
+  textIndexselected?: number | string;
 }> = ({
   sub,
   setSub,
@@ -44,16 +44,13 @@ const EditSub: React.FC<{
   setPage: setDefaultPage,
   setImage,
   image,
-  setImageStyle,
-  setEditStyles,
-  mouseImageClick,
-  setMouseImageClick,
-  mouse,
-  editStyles,
+  textIndexselected
 }) => {
   const [page, setPage] = useState(defaultPage || "page1");
   const [isNewPage, setIsNewPage] = useState(false);
-  const [index, setIndex] = useState<string | number>(1);
+  const [index, setIndex] = useState<string | number>(
+    textIndexselected !== undefined ? textIndexselected : 1
+  );
   const [x, setX] = useState<string | number>(0);
   const [y, setY] = useState<string | number>(0);
   const [width, setWidth] = useState<string | number>(0);
@@ -163,6 +160,20 @@ const EditSub: React.FC<{
     setLastIndex((old) => old + 1);
   };
 
+  const removeText = () => {
+    setSub((data) => {
+      const newPagesubs = [...data[page].filter((txt) => txt.index !== index)];
+      setIndex(newPagesubs[newPagesubs.length - 1]?.index);
+      setLastIndex(newPagesubs[newPagesubs.length - 1]?.index);
+      return {
+        ...data,
+        [page]: newPagesubs,
+      };
+    });
+
+    setIsEditingIndex(false);
+  };
+
   const addNewPage = () => {
     if (isNewPage) {
       setSub({
@@ -182,6 +193,31 @@ const EditSub: React.FC<{
           },
         ],
       });
+      updateSubInfos(sub);
+
+      setIndex(0);
+      setLastIndex(1);
+      setDefaultPage(page);
+      updateSubInfos();
+      setIsEditingPage(false);
+    }
+  };
+
+  const removePage = () => {
+    if (!isNewPage) {
+      let _lastPage = "";
+      setSub({
+        ...Object.keys(sub)
+          .filter((pg) => pg !== page)
+          .reduce((newSub, pg) => {
+            _lastPage = pg;
+            return {
+              ...newSub,
+              [pg]: pg.slice(0, 2) === "__" ? sub[pg] : [...sub[pg]],
+            };
+          }, {}),
+      });
+      setPage(_lastPage);
       updateSubInfos(sub);
 
       setIndex(0);
@@ -255,6 +291,10 @@ const EditSub: React.FC<{
   //     setMouseImageClick && setMouseImageClick(false);
   //   }
   // }, [mouseImageClick, mouse, setMouseImageClick]);
+
+  useEffect(() => {
+    textIndexselected !== undefined && setIndex(textIndexselected);
+  }, [textIndexselected]);
 
   useEffect(() => {
     const config = JSON.parse(localStorage.getItem("configs") || "{}");
@@ -435,6 +475,23 @@ const EditSub: React.FC<{
                 )}
               </Button>
             </Col>
+          </Row>
+          <Row className="col-12 justify-content-between">
+            <Button
+              className="col-5 mb-1 mt-3 ml-3 mr-0"
+              onClick={() => removePage()}
+              variant="danger"
+            >
+              Remove Page
+            </Button>
+
+            <Button
+              className="col-5 mb-1 mt-3 ml-4 mr-3"
+              onClick={() => removeText()}
+              variant="danger"
+            >
+              Remove Index
+            </Button>
           </Row>
           <Row className=" col-12 p-0 mt-5 mb-5 ml-2 mr-2">
             <Col className=" col-2 p-0 m-0">
@@ -720,6 +777,7 @@ const Select = ({
   title,
   onChange,
   defaultValue,
+  ...otherProps
 }: {
   options: { id: string | number; name: string }[];
   title: string;
@@ -728,14 +786,15 @@ const Select = ({
 }) => {
   return (
     <Form.Control
+      {...otherProps}
       onChange={onChange}
       as="select"
       className="mr-sm-2"
       //id="inlineFormCustomSelect"
-      defaultValue={defaultValue}
+      value={defaultValue}
       custom
     >
-      <option  value="none">{title || "Choose..."}</option>
+      <option value="none">{title || "Choose..."}</option>
       {options.map((option) => {
         return (
           <option key={option.id} value={option.id}>

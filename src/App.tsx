@@ -16,6 +16,7 @@ function App() {
   );
   const [imageStyle, setImageStyle] = useState<React.CSSProperties>({});
   const [mouseImageClick, setMouseImageClick] = useState(false);
+  const [textIndexselected, setTextIndexselected] = useState(0);
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
   const [subs, setSubs] = useState<TypeSub>(
@@ -31,6 +32,9 @@ function App() {
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     e.preventDefault();
+    const x = e.pageX - e.target.offsetLeft;
+    const y = e.pageY - e.target.offsetTop;
+
     setMouseImageClick(true);
     setMouseX(((e.clientX - e.target.offsetLeft) / e.target.offsetWidth) * 100);
     if (e.target.offsetTop >= e.clientY) {
@@ -38,6 +42,14 @@ function App() {
         ((e.clientY - e.target.offsetTop) / e.target.clientHeight) * 100
       );
     }
+  };
+
+  const handleTextClick = (
+    index: number | string,
+    e: React.MouseEvent<HTMLParagraphElement, MouseEvent>
+  ) => {
+    setTextIndexselected(index)
+
   };
 
   const [editStyles, setEditStyles] = useState({});
@@ -62,22 +74,25 @@ function App() {
         setImage={setImageBlob}
         image={imageBlob}
         setImageStyle={setImageStyle}
+        editStyles={editStyles}
         setEditStyles={setEditStyles}
         mouse={{ x: mouseX, y: mouseY }}
         setMouseImageClick={setMouseImageClick}
         mouseImageClick={mouseImageClick}
+        textIndexselected={textIndexselected}
       />
       <div className="mb-5 mt-5 ml-5 pl-5 justify-content-end col">
         <ImageSubTittle
           editStyles={editStyles}
-          style={{ width: "600px", ...imageStyle }}
+          style={{ width: "600px", border: "1px solid", ...imageStyle }}
           imgPath={imageBlob}
           page={currentPage}
           subtitle={subs}
           onClick={handleMouseClick}
+          onTextClick={handleTextClick}
         />
         <ImageSubTittle
-          style={{ width: "1000px", ...imageStyle }}
+          style={{ width: "1000px", border: "1px solid", ...imageStyle }}
           editStyles={editStyles}
           imgPath={imageBlob}
           page={currentPage}

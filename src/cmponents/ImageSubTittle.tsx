@@ -32,13 +32,26 @@ const ImageSubTittle: React.FC<{
   editStyles?: ImageStyle;
   style?: React.CSSProperties;
   onClick?: (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => void;
+  onTextClick?: (
+    index: number | string,
+    e: React.MouseEvent<HTMLParagraphElement, MouseEvent>
+  ) => void;
   [prop: string]: any;
-}> = ({ imgPath, subtitle, page, editStyles, onClick, ...props }) => {
+}> = ({
+  imgPath,
+  subtitle,
+  page,
+  editStyles,
+  onClick,
+  onTextClick,
+  ...props
+}) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [subY, setSubY] = useState<any>(0);
   const [subX, setSubX] = useState<any>(0);
   const [subH, setSubH] = useState<any>(0);
   const [subW, setSubW] = useState<any>(0);
+  const [mouseDown, setMouseDown] = useState(false);
   const updateSubs = () => {
     setSubY(imgRef.current?.offsetTop);
     setSubX(imgRef.current?.offsetLeft);
@@ -57,9 +70,27 @@ const ImageSubTittle: React.FC<{
     <div>
       <div
         onMouseDown={(e) => {
-          onClick && onClick(e);
-          console.log(e);
-          
+          setMouseDown(true);
+        }}
+        onMouseUp={() => {
+          setMouseDown(false);
+        }}
+        onMouseLeave={(e) => {
+          setMouseDown(false);
+        }}
+        onMouseMove={(e) => {
+          if (mouseDown) {
+            // console.log({
+            //   posY: subH - e.pageY,
+            //   subH,
+            //   posX: e.pageX - e.target.offsetLeft,
+            //   subW,
+            //   imgTop: imgRef.current?.offsetTop,
+            //   imgY: imgRef.current?.cle,
+            //   clientY: e.target.clientY,
+            //   subY
+            // });
+          }
         }}
         style={{
           position: "absolute",
@@ -77,6 +108,7 @@ const ImageSubTittle: React.FC<{
               key={index}
               id={index}
               text={text}
+              onClick={(e) => onTextClick?.(index, e)}
               globalStyle={subtitle.__global_style__}
               editStyles={editStyles?.[page]?.[index]}
               x={x}
@@ -108,6 +140,7 @@ const SubTitle = ({
   id,
   globalStyle,
   editStyles,
+  onClick,
 }: {
   text: string;
   x: number;
@@ -115,10 +148,12 @@ const SubTitle = ({
   width?: number;
   globalStyle?: React.CSSProperties;
   editStyles?: React.CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLParagraphElement> | undefined;
   [k: string]: any;
 }) => {
   return (
     <p
+      onClick={onClick}
       id={`${id}`}
       style={{
         position: "absolute",
