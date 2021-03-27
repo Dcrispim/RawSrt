@@ -33,6 +33,7 @@ const EditSub: React.FC<{
   image?: string;
   setImageStyle: TypeUseState<React.CSSProperties | string>;
   setEditStyles: TypeUseState<ImageStyle>;
+  editStyles: ImageStyle;
   mouseImageClick?: boolean;
   setMouseImageClick?: React.Dispatch<React.SetStateAction<boolean>>;
   mouse?: { x: number; y: number };
@@ -48,6 +49,7 @@ const EditSub: React.FC<{
   mouseImageClick,
   setMouseImageClick,
   mouse,
+  editStyles,
 }) => {
   const [page, setPage] = useState(defaultPage || "page1");
   const [isNewPage, setIsNewPage] = useState(false);
@@ -74,7 +76,7 @@ const EditSub: React.FC<{
     setEditStyles({
       [page]: {
         [index]: {
-          border: "3px solid " + BG_SELECT_COLOR,
+          border: "1px solid " + BG_SELECT_COLOR,
         },
       },
     });
@@ -157,6 +159,7 @@ const EditSub: React.FC<{
     }));
 
     setIndex(lastIndex);
+    setIsEditingIndex(false);
     setLastIndex((old) => old + 1);
   };
 
@@ -204,7 +207,10 @@ const EditSub: React.FC<{
   };
 
   const handleAddStyle = () => {
-    setStyle((old) => ({ ...old, [keyStyle]: valueStyle }));
+    setStyle((old) => ({
+      ...old,
+      [abbrevStyles[keyStyle] || keyStyle]: valueStyle,
+    }));
     setValueStyle("");
     setKeyStyle("");
   };
@@ -249,8 +255,6 @@ const EditSub: React.FC<{
   //     setMouseImageClick && setMouseImageClick(false);
   //   }
   // }, [mouseImageClick, mouse, setMouseImageClick]);
-
-
 
   useEffect(() => {
     const config = JSON.parse(localStorage.getItem("configs") || "{}");
@@ -342,6 +346,7 @@ const EditSub: React.FC<{
                 />
               ) : (
                 <Select
+                  defaultValue={page}
                   options={Object.keys(sub)
                     .filter((subProp) => subProp.slice(0, 2) !== "__")
                     .map((subProp) => {
@@ -385,12 +390,13 @@ const EditSub: React.FC<{
               <Form.Label>Index</Form.Label>
               {isEditingIndex ? (
                 <Form.Control
-                  value={page}
+                  value={index}
                   onChange={(e) => setIndex(e.target.value)}
                   placeholder="Index"
                 />
               ) : (
                 <Select
+                  defaultValue={index}
                   options={
                     sub[String(page)]?.map((subProp, i) => {
                       return {
@@ -416,9 +422,10 @@ const EditSub: React.FC<{
               )}
               <Button
                 className="col-12"
-                onClick={(e) =>
-                  isEditingIndex ? addNewPage() : setIsEditingIndex(true)
-                }
+                onClick={(e) => {
+                  setIndex(sub[page].length);
+                  isEditingIndex ? addNewText() : setIsEditingIndex(true);
+                }}
                 variant={"success"}
               >
                 {isEditingIndex ? (
@@ -533,11 +540,13 @@ const EditSub: React.FC<{
               className="col-2 mb-4 "
               value={maxTextSize}
               onChange={(e) => {
-                setMaxTextSize(e.target.value)
-                const config = JSON.parse(localStorage.getItem("configs") || "{}");
+                setMaxTextSize(e.target.value);
+                const config = JSON.parse(
+                  localStorage.getItem("configs") || "{}"
+                );
                 localStorage.setItem(
                   "configs",
-                  JSON.stringify({ ...config, maxTextSize:e.target.value })
+                  JSON.stringify({ ...config, maxTextSize: e.target.value })
                 );
               }}
               type="number"
@@ -710,25 +719,78 @@ const Select = ({
   options,
   title,
   onChange,
+  defaultValue,
 }: {
   options: { id: string | number; name: string }[];
   title: string;
   onChange?: React.ChangeEventHandler;
+  defaultValue: string | number;
 }) => {
   return (
     <Form.Control
       onChange={onChange}
       as="select"
       className="mr-sm-2"
-      id="inlineFormCustomSelect"
+      //id="inlineFormCustomSelect"
+      defaultValue={defaultValue}
       custom
     >
-      <option value="none">{title || "Choose..."}</option>
+      <option  value="none">{title || "Choose..."}</option>
       {options.map((option) => {
-        return <option value={option.id}>{option.name}</option>;
+        return (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        );
       })}
     </Form.Control>
   );
+};
+
+const abbrevStyles = {
+  bgc: "background-color",
+  bg: "background",
+  p: "padding",
+  pb: "paddingBottom",
+  pt: "paddingTop",
+  pl: "paddingLeft",
+  pr: "paddingRight",
+  m: "margin",
+  mb: "marginBottom",
+  mt: "marginTop",
+  ml: "marginLeft",
+  mr: "marginRight",
+
+  bd: "border",
+  bdw: "borderWidth",
+  bdst: "borderStyle",
+  bdsp: "borderSpacing",
+
+  bdb: "borderBottom",
+  bdt: "borderTop",
+  bdl: "borderLeft",
+  bdr: "borderRight",
+
+  bdrd: "borderRadius",
+  bdbrd: "borderBottomRadius",
+  bdtrd: "borderTopRadius",
+  bdlrd: "borderLeftRadius",
+  bdrrd: "borderRightRadius",
+
+  bdblrd: "borderBottomLeftRadius",
+  bdtlrd: "borderTopLeftRadius",
+  bdtrrd: "borderTopRightRadius",
+  bdbrrd: "borderBottomRightRadius",
+
+  bdbst: "borderBottomStyle",
+  bdtst: "borderTopStyle",
+  bdlst: "borderLeftStyle",
+  bdrst: "borderRightStyle",
+
+  bdbw: "borderBottomWidith",
+  bdtw: "borderTopWidith",
+  bdlw: "borderLeftWidith",
+  bdrw: "borderRightWidith",
 };
 
 export default EditSub;
