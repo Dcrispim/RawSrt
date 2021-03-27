@@ -201,7 +201,6 @@ const EditSub: React.FC<{
   const showImage = (fr: FileReader) => {
     localStorage.setItem("lastImage", String(fr.result));
     setImage(String(fr.result));
-    setSub(prevSub=>({...prevSub,[page]:}))
   };
 
   const handleAddStyle = () => {
