@@ -537,7 +537,7 @@ const EditSub: React.FC<{
                 const config = JSON.parse(localStorage.getItem("configs") || "{}");
                 localStorage.setItem(
                   "configs",
-                  JSON.stringify({ ...config, maxTextSize })
+                  JSON.stringify({ ...config, maxTextSize:e.target.value })
                 );
               }}
               type="number"
