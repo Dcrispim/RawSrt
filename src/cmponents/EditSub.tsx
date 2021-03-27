@@ -252,12 +252,12 @@ const EditSub: React.FC<{
 
 
 
-  useEffect(() => {
-    const config = JSON.parse(localStorage.getItem("configs") || "{}");
-    if (config?.maxTextSize) {
-      setMaxTextSize(config.maxTextSize);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const config = JSON.parse(localStorage.getItem("configs") || "{}");
+  //   if (config?.maxTextSize) {
+  //     setMaxTextSize(config.maxTextSize);
+  //   }
+  // }, []);
 
   return (
     <Form
