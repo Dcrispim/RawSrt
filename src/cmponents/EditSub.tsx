@@ -1,5 +1,7 @@
 /* eslint-disable react/jsx-no-undef */
 import React, { useEffect, useState } from "react";
+import Slider from "react-input-slider";
+
 import {
   Form,
   Button,
@@ -17,7 +19,7 @@ import {
 } from "../service/subtitle";
 import { ImageStyle, TypeSub } from "./ImageSubTittle";
 
-const BG_SELECT_COLOR = "#0f04";
+const BG_SELECT_COLOR = "#0f0";
 //import DragScaleBar from 'react-drag-scale-bar'
 // import { Container } from './styles';
 type TypeUseState<T> = (a: T | ((a: T) => T)) => void;
@@ -31,6 +33,9 @@ const EditSub: React.FC<{
   image?: string;
   setImageStyle: TypeUseState<React.CSSProperties | string>;
   setEditStyles: TypeUseState<ImageStyle>;
+  mouseImageClick?: boolean;
+  setMouseImageClick?: React.Dispatch<React.SetStateAction<boolean>>;
+  mouse?: { x: number; y: number };
 }> = ({
   sub,
   setSub,
@@ -40,6 +45,9 @@ const EditSub: React.FC<{
   image,
   setImageStyle,
   setEditStyles,
+  mouseImageClick,
+  setMouseImageClick,
+  mouse,
 }) => {
   const [page, setPage] = useState(defaultPage || "page1");
   const [isNewPage, setIsNewPage] = useState(false);
@@ -54,6 +62,9 @@ const EditSub: React.FC<{
   const [keyStyle, setKeyStyle] = useState<string>("");
   const [valueStyle, setValueStyle] = useState<string>("");
   const [dowloadFileName, setDowloadFileName] = useState("sub");
+  const [maxTextSize, setMaxTextSize] = useState(100);
+  const [isEditingPage, setIsEditingPage] = useState(false);
+  const [isEditingIndex, setIsEditingIndex] = useState(false);
 
   const [lastIndex, setLastIndex] = useState(
     sub[`${page}`]?.reduce((p, c) => (c.index > p ? c.index : p), 0) + 1
@@ -63,7 +74,7 @@ const EditSub: React.FC<{
     setEditStyles({
       [page]: {
         [index]: {
-          backgroundColor: BG_SELECT_COLOR,
+          border: "3px solid " + BG_SELECT_COLOR,
         },
       },
     });
@@ -174,6 +185,7 @@ const EditSub: React.FC<{
       setLastIndex(1);
       setDefaultPage(page);
       updateSubInfos();
+      setIsEditingPage(false);
     }
   };
 
@@ -189,6 +201,7 @@ const EditSub: React.FC<{
   const showImage = (fr: FileReader) => {
     localStorage.setItem("lastImage", String(fr.result));
     setImage(String(fr.result));
+    setSub(prevSub=>({...prevSub,[page]:}))
   };
 
   const handleAddStyle = () => {
@@ -230,6 +243,23 @@ const EditSub: React.FC<{
     );
   }, [page]);
 
+  useEffect(() => {
+    if (mouseImageClick) {
+      setX((prevX) => (mouse?.x !== undefined ? mouse?.x : prevX));
+      setY((prevY) => (mouse?.y !== undefined ? mouse?.y : prevY));
+      setMouseImageClick && setMouseImageClick(false);
+    }
+  }, [mouseImageClick, mouse, setMouseImageClick]);
+
+
+
+  useEffect(() => {
+    const config = JSON.parse(localStorage.getItem("configs") || "{}");
+    if (config?.maxTextSize) {
+      setMaxTextSize(config.maxTextSize);
+    }
+  }, []);
+
   return (
     <Form
       style={{
@@ -254,7 +284,7 @@ const EditSub: React.FC<{
         </label>
       </div>
       {show && (
-        <div>
+        <div className="col-12">
           <Row className="mb-2">
             <Form.Group className=" col-4 mb-0" controlId="subtitle-file">
               <Form.Label className="btn btn-primary">Load Image</Form.Label>
@@ -302,107 +332,225 @@ const EditSub: React.FC<{
             />
           </Row>
 
-          <Row style={{ alignItems: "flex-end" }}>
+          <Row className="col-12" style={{ alignItems: "flex-end" }}>
             <Form.Group className=" col-3 mb-0" controlId="formPage">
               <Form.Label>Page</Form.Label>
-              <Form.Control
-                value={page}
-                onChange={(e) => setPage(e.target.value)}
-                placeholder="Page"
-              />
+              {isEditingPage ? (
+                <Form.Control
+                  value={page}
+                  onChange={(e) => setPage(e.target.value)}
+                  placeholder="Page"
+                />
+              ) : (
+                <Select
+                  options={Object.keys(sub)
+                    .filter((subProp) => subProp.slice(0, 2) !== "__")
+                    .map((subProp) => {
+                      return {
+                        id: subProp,
+                        name: subProp.replaceAll("_", " "),
+                      };
+                    })}
+                  title="Pages"
+                  onChange={(e) => setPage(e.target.value)}
+                />
+              )}
             </Form.Group>
+            <Col className="col-3">
+              {isEditingPage && (
+                <Button
+                  className="col-12 mb-1"
+                  onClick={() => setIsEditingPage(false)}
+                  variant="danger"
+                >
+                  cancel
+                </Button>
+              )}
 
-            <Button
-              className=" col-2"
-              onClick={addNewPage}
-              disabled={!isNewPage}
-              variant="primary"
-            >
-              Add page
-            </Button>
+              <Button
+                className="col-12"
+                onClick={(e) =>
+                  isEditingPage ? addNewPage() : setIsEditingPage(true)
+                }
+                variant={"success"}
+              >
+                {isEditingPage ? (
+                  "confirm"
+                ) : (
+                  <b className="fs-1 m-0 p-0">{"\u002B"}</b>
+                )}
+              </Button>
+            </Col>
 
-            <Form.Group className=" col-3 mb-0" controlId="formIndex">
+            <Form.Group className=" col-3 mb-0" controlId="formPage">
               <Form.Label>Index</Form.Label>
-              <Form.Control
-                value={index}
-                onChange={(e) => setIndex(e.target.value)}
-                type="number"
-                min="0"
-                max={sub[String(page)]?.length}
-                step="1"
-                placeholder="index"
-              />
+              {isEditingIndex ? (
+                <Form.Control
+                  value={page}
+                  onChange={(e) => setIndex(e.target.value)}
+                  placeholder="Index"
+                />
+              ) : (
+                <Select
+                  options={
+                    sub[String(page)]?.map((subProp, i) => {
+                      return {
+                        id: i,
+                        name: i,
+                      };
+                    }) || []
+                  }
+                  title="Indexes"
+                  onChange={(e) => setIndex(e.target.value)}
+                />
+              )}
             </Form.Group>
+            <Col className="col-3">
+              {isEditingIndex && (
+                <Button
+                  className="col-12 mb-1 mr-0"
+                  onClick={() => setIsEditingIndex(false)}
+                  variant="danger"
+                >
+                  cancel
+                </Button>
+              )}
+              <Button
+                className="col-12"
+                onClick={(e) =>
+                  isEditingIndex ? addNewPage() : setIsEditingIndex(true)
+                }
+                variant={"success"}
+              >
+                {isEditingIndex ? (
+                  "confirm"
+                ) : (
+                  <b className="fs-1 m-0 p-0">{"\u002B"}</b>
+                )}
+              </Button>
+            </Col>
+          </Row>
+          <Row className=" col-12 p-0 mt-5 mb-5 ml-2 mr-2">
+            <Col className=" col-2 p-0 m-0">
+              <Form.Group className=" col-12 p-0 m-0" controlId="formX">
+                <Form.Label>X axis</Form.Label>
+                <Form.Control
+                  value={x}
+                  onChange={(e) => setX(e.target.value)}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  placeholder="X"
+                />
+              </Form.Group>
 
-            <Button className=" col-2" onClick={addNewText} variant="primary">
-              Add Text
-            </Button>
+              <Form.Group className=" col-12 p-0 m-0" controlId="formY">
+                <Form.Label>Y axis</Form.Label>
+                <Form.Control
+                  value={y}
+                  onChange={(e) => setY(e.target.value)}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  placeholder="Y"
+                />
+              </Form.Group>
+            </Col>
+            <Col className=" col-8 p-0 m-0">
+              <Row className=" col-12 justify-content-center m-0">
+                <Col className=" col-1 justify-content-center m-0 pt-3">
+                  <Slider
+                    axis="y"
+                    y={y || 0}
+                    xstep={0.1}
+                    onChange={({ y }) => setY(y.toPrecision(2))}
+                  />
+                </Col>
+
+                <Col className=" col-8 p-0 mr-1 ml-2">
+                  <Slider
+                    className=" mb-2"
+                    axis="x"
+                    xstep={0.1}
+                    x={x || 0}
+                    onChange={({ x }) => setX(x.toPrecision(2))}
+                  />
+                  <textarea
+                    value={subText}
+                    onChange={(e) => setSubText(e.target.value)}
+                    className=" col-12"
+                    style={{ height: "80%" }}
+                  ></textarea>
+                  <Slider
+                    axis="x"
+                    xstep={0.1}
+                    x={width || 0}
+                    onChange={({ x }) => setWidth(x.toPrecision(2))}
+                  />
+                </Col>
+                <Col className=" col-1 m-0 pt-3">
+                  <Slider
+                    axis="y"
+                    ystep={0.1}
+                    ymax={maxTextSize}
+                    y={size || 0}
+                    onChange={({ y }) => setSize(y.toPrecision(2))}
+                  />
+                </Col>
+              </Row>
+            </Col>
+            <Col className=" col-2 p-0 m-0">
+              <Form.Group className="col-12 p-0 m-0" controlId="formY">
+                <Form.Label>Size</Form.Label>
+                <Form.Control
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  placeholder="size"
+                />
+              </Form.Group>
+              <Form.Group className=" col-12 p-0 m-0" controlId="formWidth">
+                <Form.Label>Width</Form.Label>
+                <Form.Control
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  placeholder="width"
+                />
+              </Form.Group>
+            </Col>
           </Row>
           <Row>
-            <Form.Group className=" col-3" controlId="formX">
-              <Form.Label>X axis</Form.Label>
-              <Form.Control
-                value={x}
-                onChange={(e) => setX(e.target.value)}
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                placeholder="X"
-              />
-            </Form.Group>
+            <Form.Label className="col-3 mb-4 ml-4">Max Text Size</Form.Label>
+            <Form.Control
+              className="col-2 mb-4 "
+              value={maxTextSize}
+              onChange={(e) => {
+                setMaxTextSize(e.target.value)
+                const config = JSON.parse(localStorage.getItem("configs") || "{}");
+                localStorage.setItem(
+                  "configs",
+                  JSON.stringify({ ...config, maxTextSize })
+                );
+              }}
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              placeholder="Max Text Size"
+            />
 
-            <Form.Group className=" col-3" controlId="formY">
-              <Form.Label>Y axis</Form.Label>
-              <Form.Control
-                value={y}
-                onChange={(e) => setY(e.target.value)}
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                placeholder="Y"
-              />
-            </Form.Group>
-
-            <Form.Group className=" col-3" controlId="formY">
-              <Form.Label>Size</Form.Label>
-              <Form.Control
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                placeholder="size"
-              />
-            </Form.Group>
-            <Form.Group className=" col-3" controlId="formWidth">
-              <Form.Label>Width</Form.Label>
-              <Form.Control
-                value={width}
-                onChange={(e) => setWidth(e.target.value)}
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                placeholder="width"
-              />
-            </Form.Group>
-          </Row>
-          <Row>
-            <Form.Group className=" col-8" controlId="formText">
-              <Form.Label>Text</Form.Label>
-              <Form.Control
-                value={subText}
-                onChange={(e) => setSubText(e.target.value)}
-                type="text"
-                placeholder="width"
-              />
-            </Form.Group>
             {Object.keys(style).length > 0 && (
               <DropdownButton
-                className="col-4"
+                className="col-4 mb-4"
                 variant="secondary"
                 id="dropdown-basic-button"
                 title="Styles"
@@ -557,6 +705,31 @@ const getLocalSubtitle = (callback: (fr: FileReader) => any) => (evt) => {
     fr.onload = () => callback(fr);
     fr.readAsText(files[0]);
   }
+};
+
+const Select = ({
+  options,
+  title,
+  onChange,
+}: {
+  options: { id: string | number; name: string }[];
+  title: string;
+  onChange?: React.ChangeEventHandler;
+}) => {
+  return (
+    <Form.Control
+      onChange={onChange}
+      as="select"
+      className="mr-sm-2"
+      id="inlineFormCustomSelect"
+      custom
+    >
+      <option value="none">{title || "Choose..."}</option>
+      {options.map((option) => {
+        return <option value={option.id}>{option.name}</option>;
+      })}
+    </Form.Control>
+  );
 };
 
 export default EditSub;

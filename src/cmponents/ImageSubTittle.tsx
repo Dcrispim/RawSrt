@@ -27,12 +27,13 @@ export type TypeSub = {
 
 const ImageSubTittle: React.FC<{
   imgPath: string;
-  subtitle: TypeSub
+  subtitle: TypeSub;
   page: string;
   editStyles?: ImageStyle;
   style?: React.CSSProperties;
+  onClick?: (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => void;
   [prop: string]: any;
-}> = ({ imgPath, subtitle, page, editStyles, ...props }) => {
+}> = ({ imgPath, subtitle, page, editStyles, onClick, ...props }) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [subY, setSubY] = useState<any>(0);
   const [subX, setSubX] = useState<any>(0);
@@ -51,11 +52,15 @@ const ImageSubTittle: React.FC<{
       window.removeEventListener("resize", updateSubs);
     };
   }, []);
-  console.log(subtitle);
 
   return (
     <div>
       <div
+        onMouseDown={(e) => {
+          onClick && onClick(e);
+          console.log(e);
+          
+        }}
         style={{
           position: "absolute",
           zIndex: 11,
@@ -85,7 +90,7 @@ const ImageSubTittle: React.FC<{
       <img
         onLoad={updateSubs}
         ref={imgRef}
-        src={subtitle?.__image_link__[page] || imgPath}
+        src={imgPath || subtitle?.__image_link__?.[page]}
         alt={page}
         {...props}
       />

@@ -15,19 +15,32 @@ function App() {
     localStorage.getItem("lastImage") || ""
   );
   const [imageStyle, setImageStyle] = useState<React.CSSProperties>({});
+  const [mouseImageClick, setMouseImageClick] = useState(false);
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
   const [subs, setSubs] = useState<TypeSub>(
     localStorage.getItem("lastPSRT")
       ? parsePSRTToObject(localStorage.getItem("lastPSRT") || "")
-      : parsePSRTFileToObject(
-          "assets/kaifuku_32.psrt"
-        )
+      : parsePSRTFileToObject("assets/kaifuku_32.psrt")
   );
   const [currentPage, setCurrentPage] = useState(
     localStorage.getItem("lastPage") || "page1"
   );
 
-  const [editStyles, setEditStyles] = useState({});
+  const handleMouseClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    setMouseImageClick(true);
+    setMouseX(((e.clientX - e.target.offsetLeft) / e.target.offsetWidth) * 100);
+    if (e.target.offsetTop >= e.clientY) {
+      setMouseY(
+        ((e.clientY - e.target.offsetTop) / e.target.clientHeight) * 100
+      );
+    }
+  };
 
+  const [editStyles, setEditStyles] = useState({});
   useEffect(() => {
     localStorage.setItem("lastPage", currentPage);
     if (subs?.__image_link__?.[currentPage]) {
@@ -40,7 +53,7 @@ function App() {
   }, [imageBlob]);
 
   return (
-    <div className="App container" style={{ display: "flex" }}>
+    <div className="App container mb-6" style={{ display: "flex" }}>
       <EditSub
         sub={subs}
         setSub={setSubs}
@@ -50,20 +63,26 @@ function App() {
         image={imageBlob}
         setImageStyle={setImageStyle}
         setEditStyles={setEditStyles}
+        mouse={{ x: mouseX, y: mouseY }}
+        setMouseImageClick={setMouseImageClick}
+        mouseImageClick={mouseImageClick}
       />
-      <div>
+      <div className="mb-5 mt-5 ml-5 pl-5 justify-content-end col">
         <ImageSubTittle
           editStyles={editStyles}
+          style={{ width: "600px", ...imageStyle }}
           imgPath={imageBlob}
           page={currentPage}
           subtitle={subs}
+          onClick={handleMouseClick}
         />
         <ImageSubTittle
-          style={{ width: "1300px", ...imageStyle }}
+          style={{ width: "1000px", ...imageStyle }}
           editStyles={editStyles}
           imgPath={imageBlob}
           page={currentPage}
           subtitle={subs}
+          onClick={handleMouseClick}
         />
       </div>
     </div>

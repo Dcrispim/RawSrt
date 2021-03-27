@@ -99,9 +99,9 @@ export const parseObjectToPSRT = (sub: {
   Object.keys(sub)
     .filter((a) => !a.includes("__"))
     .map((page) => {
-      out += `$START ${page}|${JSON.stringify(sub?.__global_style__ || {})}|${sub?.__image_link__[page]}\n`;
+      out += `$START ${page}  |  ${JSON.stringify(sub?.__global_style__ || {})}  |  ${sub?.__image_link__[page]}\n`;
       sub[page]?.map(({ x, y, size, width, text, style, index }, i) => {
-        out += `>>${x}-${y}-${size}-${width}|${JSON.stringify(style)}|${
+        out += `>>${x}-${y}-${size}-${width}  |  ${JSON.stringify(style)}  |  ${
           index || i
         }\n`;
         out += `${text}\n\n`;
